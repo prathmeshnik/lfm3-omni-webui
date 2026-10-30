@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+<title>LFM3 Omni · Local Web UI</title>
+<script>
+try {
+  var savedTheme = localStorage.getItem("lfm3-theme");
+  document.documentElement.dataset.theme = savedTheme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+} catch (e) { document.documentElement.dataset.theme = "light"; }
+</script>
+<link rel="stylesheet" href="/static/styles.css?v=26">
+<script defer src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-voice" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></symbol>
+  <symbol id="i-speak" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></symbol>
+  <symbol id="i-listen" viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></symbol>
+  <symbol id="i-look" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></symbol>
+  <symbol id="i-audio" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 4v16M17 4v16M2 9h5M2 15h5M17 9h5M17 15h5"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 21h16"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></symbol>
+  <symbol id="i-document" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+</svg>
+
+<div id="root">
+  <div class="app">
+    <aside class="sidebar" id="sidebar" aria-label="Navigation">
+      <div class="brand">
+        <div class="brand-mark">L</div>
+        <div class="brand-text">
+          <div class="brand-name">LFM3 Omni</div>
+          <div class="brand-sub">local web ui</div>
+        </div>
+        <button class="icon-btn sidebar-close" id="sidebar-close" aria-label="Close menu"><svg class="ico"><use href="#i-close"/></svg></button>
+      </div>
+
+      <div class="status-card" id="status-card">
+        <div class="row"><span class="k">model</span><span class="v" id="st-model">—</span></div>
+        <div class="row"><span class="k">server</span><span class="v" id="st-server">—</span></div>
+        <div class="row"><span class="k">modality</span><span class="v" id="st-mod">—</span></div>
+      </div>
+
+      <nav class="nav" id="nav">
+        <button class="nav-btn active" data-mode="chat"><svg class="ico"><use href="#i-chat"/></svg><span class="lbl">Chat</span></button>
+        <button class="nav-btn" data-mode="voice"><svg class="ico"><use href="#i-voice"/></svg><span class="lbl">Voice</span></button>
+        <button class="nav-btn" data-mode="speak"><svg class="ico"><use href="#i-speak"/></svg><span class="lbl">Speak</span></button>
+        <button class="nav-btn" data-mode="listen"><svg class="ico"><use href="#i-listen"/></svg><span class="lbl">Listen</span></button>
+        <button class="nav-btn" data-mode="look"><svg class="ico"><use href="#i-look"/></svg><span class="lbl">Look</span></button>
+      </nav>
+
+      <div class="chats-card">
+        <div class="row"><span class="k">chats</span><button class="nav-btn" id="btn-new-chat" style="padding:4px 8px;font-size:11px;">new chat</button></div>
+        <div class="chats-list" id="chats-list"></div>
+      </div>
+
+      <div class="sidebar-foot">
+        <button class="nav-btn" id="settings-open"><svg class="ico"><use href="#i-settings"/></svg><span class="lbl">Settings</span></button>
+        <div class="foot-meta">
+          llama.cpp server<br><span id="st-addr">127.0.0.1:9931</span>
+        </div>
+      </div>
+    </aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <div class="main">
+      <header class="topbar">
+        <button class="icon-btn" id="btn-menu-mobile" title="Menu" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false"><svg class="ico"><use href="#i-menu"/></svg></button>
+        <div class="topbar-heading">
+          <h1 id="topbar-title">Chat</h1>
+          <div class="sub" id="topbar-sub"></div>
+        </div>
+        <div class="spacer"></div>
+        <span class="chip ctx-chip" id="ctx-chip" title="context tokens used in the last turn / context window">ctx —</span>
+        <span class="chip status-chip" id="status-chip"><span class="dot ok"></span><span id="status-label">online</span></span>
+        <button class="icon-btn theme-toggle" id="theme-toggle" title="Switch theme" aria-label="Switch theme">
+          <svg class="ico ico-moon"><use href="#i-moon"/></svg>
+          <svg class="ico ico-sun"><use href="#i-sun"/></svg>
+        </button>
+        <button class="icon-btn" id="settings-open-top" title="Settings" aria-label="Settings"><svg class="ico"><use href="#i-settings"/></svg></button>
+      </header>
+
+      <div id="view">
+        <!-- CHAT -->
+        <div id="view-chat" style="display:flex;flex-direction:column;height:100%;min-height:0;">
+          <div class="thread" id="thread">
+            <div class="empty" id="empty-state">
+              <div class="kicker">local · multimodal · 2b</div>
+              <h2>Ask, look, listen, speak.</h2>
+              <p>One local page for text, images, audio and video. Attach a file, hold the mic, or just type.</p>
+              <div class="cap-grid">
+                <button class="cap-tile" type="button" data-goto="chat">
+                  <span class="cap-ico"><svg class="ico"><use href="#i-chat"/></svg></span>
+                  <span class="cap-txt"><b>Ask</b><span>type or attach</span></span>
+                </button>
+                <button class="cap-tile" type="button" data-goto="look">
+                  <span class="cap-ico"><svg class="ico"><use href="#i-look"/></svg></span>
+                  <span class="cap-txt"><b>Look</b><span>image q&amp;a</span></span>
+                </button>
+                <button class="cap-tile" type="button" data-goto="listen">
+                  <span class="cap-ico"><svg class="ico"><use href="#i-listen"/></svg></span>
+                  <span class="cap-txt"><b>Listen</b><span>audio in</span></span>
+                </button>
+                <button class="cap-tile" type="button" data-goto="speak">
+                  <span class="cap-ico"><svg class="ico"><use href="#i-speak"/></svg></span>
+                  <span class="cap-txt"><b>Speak</b><span>text to voice</span></span>
+                </button>
+              </div>
+              <div class="cap-row" id="empty-caps"></div>
+            </div>
+            <div class="thread-inner" id="thread-inner"></div>
+          </div>
+          <div class="composer-zone">
+            <div class="composer-wrap">
+              <div class="composer" id="composer">
+                <textarea id="composer-input" rows="1" placeholder="Write a message, or attach something…"></textarea>
+                <div class="attach-row" id="attach-row"></div>
+                <div class="composer-bar">
+                  <button class="tool-btn" id="btn-attach-image" title="Attach image" aria-label="Attach image"><svg class="ico"><use href="#i-image"/></svg></button>
+                  <button class="tool-btn" id="btn-attach-audio" title="Attach audio" aria-label="Attach audio"><svg class="ico"><use href="#i-audio"/></svg></button>
+                  <button class="tool-btn" id="btn-attach-video" title="Attach video" aria-label="Attach video"><svg class="ico"><use href="#i-video"/></svg></button>
+                  <button class="tool-btn" id="btn-attach-document" title="Attach document" aria-label="Attach document"><svg class="ico"><use href="#i-document"/></svg></button>
+                  <button class="tool-btn" id="btn-mic" title="Record audio" aria-label="Record audio"><svg class="ico" id="mic-ico"><use href="#i-mic"/></svg></button>
+                  <div class="bar-spacer"></div>
+                  <button class="send-btn" id="btn-send" title="Send"><svg class="ico"><use href="#i-send"/></svg><span>Send</span></button>
+                </div>
+                <div class="composer-hint">Enter to send · Shift+Enter for a new line · drop files anywhere</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VOICE -->
+        <div id="view-voice" style="display:none;flex-direction:column;height:100%;min-height:0;">
+          <div class="voice-stage">
+            <div class="stage-head">
+              <span class="label">voice session</span>
+              <label class="stage-voice" for="voice-voice">voice
+                <select id="voice-voice">
+                  <option value="female">female</option>
+                  <option value="male">male</option>
+                </select>
+              </label>
+              <span class="status" id="voice-status">ready</span>
+            </div>
+            <div class="voice-transcript" id="voice-transcript">
+              <div class="turn">
+                <span class="who">you</span>
+                <div class="t-user" id="voice-t-user">Hold Space and speak.</div>
+              </div>
+              <div class="turn">
+                <span class="who">lfm3</span>
+                <div class="t-assistant" id="voice-t-assistant">Your conversation will appear here.</div>
+              </div>
+            </div>
+            <div class="voice-controls">
+              <button class="mic-btn" id="btn-voice-mic"><svg class="ico"><use href="#i-mic"/></svg><span>Hold to talk</span></button>
+              <button class="btn" id="btn-voice-end"><svg class="ico"><use href="#i-stop"/></svg><span>End session</span></button>
+            </div>
+            <div class="hint">Hold <kbd>Space</kbd> anywhere on this screen to talk. Release to send. The microphone is open only while you hold.</div>
+            <div class="stat-grid" id="voice-stats">
+              <div class="stat"><span class="stat-k">ttft</span><span class="stat-v" id="vs-ttft">—</span></div>
+              <div class="stat"><span class="stat-k">prefill</span><span class="stat-v" id="vs-prefill">—</span></div>
+              <div class="stat"><span class="stat-k">decode</span><span class="stat-v" id="vs-tps">—</span></div>
+              <div class="stat"><span class="stat-k">out tok</span><span class="stat-v" id="vs-out">—</span></div>
+              <div class="stat"><span class="stat-k">context</span><span class="stat-v" id="vs-ctx">—</span></div>
+              <div class="stat"><span class="stat-k">stt</span><span class="stat-v" id="vs-stt">—</span></div>
+              <div class="stat"><span class="stat-k">tts · rtf</span><span class="stat-v" id="vs-tts">—</span></div>
+              <div class="stat"><span class="stat-k">turn</span><span class="stat-v" id="vs-turn">—</span></div>
+            </div>
+            <div class="voice-out" id="voice-out" style="display:none;">
+              <div class="voice-bar">
+                <button class="btn small" id="voice-play"><svg class="ico"><use href="#i-send"/></svg><span>Play</span></button>
+                <div class="voice-scrub"><input type="range" id="voice-seek" min="0" max="1000" value="0"></div>
+                <span class="mono-note" id="voice-time">0:00 / 0:00</span>
+                <select class="voice-rate" id="voice-rate">
+                  <option value="1" selected>1.0x</option>
+                  <option value="1.25">1.25x</option>
+                  <option value="1.5">1.5x</option>
+                  <option value="1.75">1.75x</option>
+                  <option value="2">2.0x</option>
+                </select>
+              </div>
+              <div class="voice-wave" id="voice-wave" aria-hidden="true"></div>
+              <audio id="voice-audio"></audio>
+            </div>
+          </div>
+        </div>
+
+        <!-- SPEAK -->
+        <div id="view-speak" style="display:none;">
+          <div class="panel">
+            <p class="lede">Turn text into speech, or speak a line and let the model write it for you first.</p>
+            <div class="card">
+              <div class="field">
+                <div class="field-head">
+                  <label for="tts-input">Text</label>
+                  <button class="btn small" id="btn-tts-mic"><svg class="ico"><use href="#i-mic"/></svg><span>Dictate</span></button>
+                </div>
+                <textarea id="tts-input" rows="5" placeholder="Hello, I am LFM3 Omni, running on your own hardware."></textarea>
+                <div class="hint" id="tts-mic-status">Press Dictate or hold <kbd>Space</kbd> to speak. The transcript is generated into speech automatically. The microphone is open only while you hold.</div>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="tts-lang">Language</label>
+                  <select id="tts-lang">
+                    <option value="en">English</option>
+                    <option value="en-gb">English (British)</option>
+                    <option value="de">German</option>
+                    <option value="fr">French</option>
+                    <option value="es">Spanish</option>
+                    <option value="it">Italian</option>
+                    <option value="pt">Portuguese</option>
+                    <option value="zh">Chinese</option>
+                    <option value="ja">Japanese</option>
+                    <option value="ko">Korean</option>
+                    <option value="ar">Arabic</option>
+                    <option value="hi">Hindi</option>
+                    <option value="ru">Russian</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="tts-voice">Voice</label>
+                  <select id="tts-voice">
+                    <option value="female">female</option>
+                    <option value="male">male</option>
+                  </select>
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn primary" id="btn-tts-generate"><svg class="ico"><use href="#i-speak"/></svg><span>Generate speech</span></button>
+                <span class="status" id="tts-status">idle</span>
+              </div>
+            </div>
+            <div class="card" id="tts-result" style="display:none;">
+              <div class="who">llama.cpp · POST /tts</div>
+              <audio class="audio-player" id="tts-player" controls></audio>
+              <div class="actions" style="margin-top:12px;">
+                <button class="btn" id="tts-download"><svg class="ico"><use href="#i-download"/></svg><span>Download .wav</span></button>
+                <span class="mono-note" id="tts-meta"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LISTEN -->
+        <div id="view-listen" style="display:none;">
+          <div class="panel">
+            <p class="lede">Upload an audio clip or hold the button to record. The model transcribes it, then answers questions about it.</p>
+            <div class="card">
+              <div class="field">
+                <label for="listen-file">Audio file</label>
+                <input type="file" id="listen-file" accept="audio/*,.mp3,.wav,.flac,.m4a,.ogg,.webm">
+              </div>
+              <div class="actions">
+                <button class="btn primary" id="btn-listen-record"><svg class="ico"><use href="#i-mic"/></svg><span>Hold to record</span></button>
+                <button class="btn" id="btn-listen-transcribe"><svg class="ico"><use href="#i-listen"/></svg><span>Transcribe</span></button>
+                <span class="status" id="listen-status">idle</span>
+              </div>
+              <div class="hint">Hold <kbd>Space</kbd> on this screen to record. Release to stop and transcribe. The microphone is open only while you hold.</div>
+              <div class="result-box" id="listen-result" style="display:none;margin-top:20px;">
+                <div class="who">transcript</div>
+                <div class="txt" id="listen-transcript"></div>
+                <div class="actions" style="margin-top:14px;">
+                  <button class="btn" id="btn-listen-answer"><svg class="ico"><use href="#i-arrow"/></svg><span>Ask the model about it</span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LOOK -->
+        <div id="view-look" style="display:none;">
+          <div class="panel">
+            <p class="lede">Show the model an image and ask what you want to know about it.</p>
+            <div class="card">
+              <div class="field">
+                <label for="look-file">Image</label>
+                <input type="file" id="look-file" accept="image/*">
+              </div>
+              <div class="field">
+                <label for="look-q">Question</label>
+                <textarea id="look-q" rows="2" placeholder="What is happening in this image?"></textarea>
+              </div>
+              <button class="btn primary" id="btn-look-run"><svg class="ico"><use href="#i-look"/></svg><span>Describe image</span></button>
+            </div>
+            <div class="card" id="look-result" style="display:none;">
+              <div class="who">llama.cpp · multimodal</div>
+              <div class="txt" id="look-answer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="drawer-overlay" id="drawer-overlay" style="display:none;"></div>
+  <div class="drawer" id="drawer" style="display:none;">
+    <button class="icon-btn close" id="drawer-close" aria-label="Close"><svg class="ico"><use href="#i-close"/></svg></button>
+    <h3>Settings</h3>
+    <div class="field">
+      <label for="set-url">Server URL</label>
+      <input id="set-url" value="http://127.0.0.1:9931" placeholder="http://127.0.0.1:9931">
+    </div>
+    <div class="field">
+      <label for="set-temp">Temperature</label>
+      <input id="set-temp" type="number" step="0.1" min="0" max="2" value="0">
+    </div>
+    <div class="field">
+      <label for="set-max">Max tokens</label>
+      <input id="set-max" type="number" step="1" value="512">
+    </div>
+    <div class="field">
+      <label for="set-instr">Instructions</label>
+      <textarea id="set-instr" rows="3" placeholder="Respond with interleaved text and audio."></textarea>
+    </div>
+    <div class="field">
+      <label for="set-voice">Assistant voice</label>
+      <select id="set-voice">
+        <option value="female">female</option>
+        <option value="male">male</option>
+      </select>
+    </div>
+    <button class="btn primary" id="btn-save-settings">Save</button>
+  </div>
+
+  <div class="drop-overlay" id="drop-overlay" style="display:none;">
+    <div class="drop-box">
+      <div class="big">Drop a file</div>
+      <div class="drop-sub">Images, audio, or video.</div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/app.js?v=20"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local environment
+.env
+.DS_Store
+
+# Runtime data (generated locally)
+logs/
+outputs/chats/*
+outputs/tts/*
+!outputs/chats/.gitkeep
+!outputs/tts/.gitkeep
+
+# Editors
+.vscode/
+.idea/
